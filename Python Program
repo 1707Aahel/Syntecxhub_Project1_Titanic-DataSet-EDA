@@ -1,0 +1,96 @@
+# 🔹 1. Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Style for better visuals
+sns.set(style="whitegrid")
+
+
+# 🔹 2. Load Dataset
+df = pd.read_csv("titanic.csv")
+
+# Display first 5 rows
+print("First 5 rows of dataset:")
+print(df.head())
+
+
+# 🔹 3. Data Inspection
+print("\nDataset Info:")
+print(df.info())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+print("\nStatistical Summary:")
+print(df.describe())
+
+
+# 🔹 4. Data Cleaning
+
+# Fill missing Age with median
+df['Age'].fillna(df['Age'].median(), inplace=True)
+
+# Fill missing Embarked with mode
+df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
+
+# Drop Cabin column (too many missing values)
+if 'Cabin' in df.columns:
+    df.drop(columns=['Cabin'], inplace=True)
+
+
+# 🔹 5. Feature Engineering (Age Groups)
+
+def age_group(age):
+    if age < 18:
+        return "Child"
+    elif age < 60:
+        return "Adult"
+    else:
+        return "Senior"
+
+df['Age_Group'] = df['Age'].apply(age_group)
+
+
+# 🔹 6. Data Analysis
+
+print("\nSurvival Rate by Gender:")
+print(df.groupby('Sex')['Survived'].mean())
+
+print("\nSurvival Rate by Passenger Class:")
+print(df.groupby('Pclass')['Survived'].mean())
+
+print("\nSurvival Rate by Age Group:")
+print(df.groupby('Age_Group')['Survived'].mean())
+
+
+# 🔹 7. Data Visualization
+
+# Survival by Gender
+plt.figure()
+sns.barplot(x='Sex', y='Survived', data=df)
+plt.title("Survival Rate by Gender")
+plt.show()
+
+# Survival by Class
+plt.figure()
+sns.barplot(x='Pclass', y='Survived', data=df)
+plt.title("Survival Rate by Passenger Class")
+plt.show()
+
+# Age Distribution by Survival
+plt.figure()
+sns.boxplot(x='Survived', y='Age', data=df)
+plt.title("Age Distribution by Survival")
+plt.show()
+
+
+# 🔹 8. Final Insights
+
+print("\n🔹 Key Insights:")
+print("1. Female passengers had a significantly higher survival rate than males.")
+print("2. First-class passengers had the highest survival rate.")
+print("3. Third-class passengers had the lowest survival rate.")
+print("4. Children had relatively better survival chances compared to adults and seniors.")
+print("5. Socio-economic status and gender played a major role in survival outcomes.")
